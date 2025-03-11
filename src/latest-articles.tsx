@@ -13,9 +13,10 @@ export default function LatestArticles() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
   const { push } = useNavigation();
-  const preferences = getPreferenceValues();
-  const postsPerPage = parseInt(preferences.postsPerPage) || 30;
-  const maxPosts = parseInt(preferences.maxPosts) || 90;
+  
+  // Load preferences but don't use them directly in this component
+  // They are used in the fetchArticles function
+  getPreferenceValues();
 
   // Load articles
   useEffect(() => {

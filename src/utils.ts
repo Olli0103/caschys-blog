@@ -18,85 +18,44 @@ interface CachedData {
   timestamp: number;
 }
 
-// Cache expiration time (60 minutes)
-const CACHE_EXPIRATION = 60 * 60 * 1000;
+// Cache expiration time (24 hours)
+const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
 
-// Default fetch period (3 months)
-const DEFAULT_FETCH_PERIOD_MONTHS = 3;
-
-/**
- * Gets the ISO date string for a date N months ago
- */
-function getDateMonthsAgo(months: number): string {
-  const date = new Date();
-  date.setMonth(date.getMonth() - months);
-  return date.toISOString();
-}
-
-/**
- * Formats a date into a readable format
- */
+// Format a date string
 export function formatDate(dateString: string): string {
-  try {
-    const date = new Date(dateString);
-    
-    // Check if date is valid
-    if (isNaN(date.getTime())) {
-      return "";
-    }
-    
-    // Today
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Yesterday
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    // Date for comparison (without time)
-    const articleDate = new Date(date);
-    articleDate.setHours(0, 0, 0, 0);
-    
-    // Formatting options
-    const timeFormat = { hour: "2-digit", minute: "2-digit" } as const;
-    const dateFormat = { day: "2-digit", month: "2-digit", year: "numeric" } as const;
-    
-    // Time
-    const time = date.toLocaleTimeString("en-US", timeFormat);
-    
-    if (articleDate.getTime() === today.getTime()) {
-      return `Today, ${time}`;
-    } else if (articleDate.getTime() === yesterday.getTime()) {
-      return `Yesterday, ${time}`;
-    } else {
-      return `${date.toLocaleDateString("en-US", dateFormat)}, ${time}`;
-    }
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return dateString;
-  }
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
-/**
- * Removes HTML tags from a string
- */
-export function stripHtml(html: string): string {
-  return html.replace(/<\/?[^>]+(>|$)/g, "");
-}
-
-/**
- * Truncates text to a specific length
- */
+// Truncate text to a specified length
 export function truncateText(text: string, maxLength: number): string {
   if (!text) return "";
   
-  const strippedText = stripHtml(text);
+  // Remove HTML tags
+  const plainText = text.replace(/<[^>]*>/g, "");
   
-  if (strippedText.length <= maxLength) {
-    return strippedText;
-  }
+  if (plainText.length <= maxLength) return plainText;
   
-  return strippedText.substring(0, maxLength) + "...";
+  return plainText.substring(0, maxLength) + "...";
+}
+
+// Notify about article updates
+function notifyArticleUpdates(articles: Article[]) {
+  // This function is called when new articles are fetched
+  // It could be expanded to show notifications or update UI
+  console.log(`Updated articles: ${articles.length}`);
+}
+
+// Clear the cache
+async function clearCache() {
+  await LocalStorage.removeItem("cached_articles");
+  console.log("Cache cleared");
 }
 
 /**
@@ -169,15 +128,21 @@ export async function parseRssFeed(xmlData: string): Promise<Article[]> {
       ? result.rss.channel.item 
       : [result.rss.channel.item];
     
-    return items.map((item: any) => ({
-      title: item.title || "No Title",
-      link: item.link || "",
-      pubDate: item.pubDate || "",
-      description: item.description || "",
-      creator: item["dc:creator"] || "",
-      categories: Array.isArray(item.category) ? item.category : item.category ? [item.category] : [],
-      content: item["content:encoded"] || item.description || "",
-      guid: item.guid && item.guid._ ? item.guid._ : item.guid || ""
+    return items.map((item: Record<string, unknown>) => ({
+      title: item.title as string || "No Title",
+      link: item.link as string || "",
+      pubDate: item.pubDate as string || "",
+      description: item.description as string || "",
+      creator: item["dc:creator"] as string || "",
+      categories: Array.isArray(item.category) 
+        ? (item.category as string[]) 
+        : item.category 
+          ? [item.category as string] 
+          : [],
+      content: (item["content:encoded"] as string) || (item.description as string) || "",
+      guid: item.guid && typeof item.guid === 'object' && '_' in (item.guid as object)
+        ? ((item.guid as Record<string, string>)._ as string) 
+        : (item.guid as string) || ""
     }));
   } catch (error) {
     console.error("Error parsing RSS feed:", error);
@@ -197,7 +162,7 @@ async function fetchArticlePage(page: number, options: {
   perPage?: number;
 } = {}): Promise<Article[]> {
   const preferences = getPreferenceValues();
-  const defaultPerPage = parseInt(preferences.postsPerPage) || 30;
+  const defaultPerPage = parseInt(preferences.postsPerPage as string) || 30;
   const { perPage = defaultPerPage } = options;
   
   console.log(`Fetching page ${page} (per_page: ${perPage})...`);
@@ -213,40 +178,13 @@ async function fetchArticlePage(page: number, options: {
 }
 
 /**
- * Clears the article cache
- */
-export async function clearCache(): Promise<void> {
-  try {
-    await LocalStorage.removeItem("cached_articles");
-    console.log("Cache cleared successfully");
-  } catch (error) {
-    console.error("Error clearing cache:", error);
-  }
-}
-
-/**
- * Event emitter for article updates
- */
-type ArticleUpdateCallback = (articles: Article[]) => void;
-const articleUpdateCallbacks: Set<ArticleUpdateCallback> = new Set();
-
-export function onArticlesUpdate(callback: ArticleUpdateCallback) {
-  articleUpdateCallbacks.add(callback);
-  return () => articleUpdateCallbacks.delete(callback);
-}
-
-function notifyArticleUpdates(articles: Article[]) {
-  articleUpdateCallbacks.forEach(callback => callback(articles));
-}
-
-/**
  * Loads articles from Caschys Blog with caching and progressive loading
  */
 export async function fetchArticles(forceRefresh: boolean = false): Promise<Article[]> {
   const startTime = performance.now();
   const preferences = getPreferenceValues();
-  const postsPerPage = parseInt(preferences.postsPerPage) || 30;
-  const maxPosts = parseInt(preferences.maxPosts) || 90;
+  const postsPerPage = parseInt(preferences.postsPerPage as string) || 30;
+  const maxPosts = parseInt(preferences.maxPosts as string) || 90;
   
   try {
     // Clear cache if force refresh is requested
