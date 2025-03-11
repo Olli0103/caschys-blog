@@ -8,31 +8,31 @@ interface ArticleListItemProps {
 
 export default function ArticleListItem({ article, actions }: ArticleListItemProps) {
   const accessories: List.Item.Accessory[] = [];
-  
+
   // Date as accessory
   if (article.pubDate) {
     accessories.push({
       date: new Date(article.pubDate),
-      tooltip: formatDate(article.pubDate)
+      tooltip: formatDate(article.pubDate),
     });
   }
-  
+
   // Author as accessory, if available
   if (article.creator) {
     accessories.push({
       icon: { source: Icon.Person, tintColor: Color.PrimaryText },
-      tooltip: `Author: ${article.creator}`
+      tooltip: `Author: ${article.creator}`,
     });
   }
-  
+
   // Categories as tags, if available
   if (article.categories && article.categories.length > 0) {
     accessories.push({
       tag: {
         value: article.categories[0],
-        color: Color.Blue
+        color: Color.Blue,
       },
-      tooltip: `Categories: ${article.categories.join(", ")}`
+      tooltip: `Categories: ${article.categories.join(", ")}`,
     });
   }
 
@@ -45,4 +45,4 @@ export default function ArticleListItem({ article, actions }: ArticleListItemPro
       icon={{ source: Icon.Document, tintColor: Color.Blue }}
     />
   );
-} 
+}

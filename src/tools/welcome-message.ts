@@ -4,11 +4,12 @@
  */
 export default async function welcomeMessage() {
   return {
-    message: "Welcome to the Caschys Blog Assistant! I can help you search for articles, get the latest news, and submit tips to the blog.",
+    message:
+      "Welcome to the Caschys Blog Assistant! I can help you search for articles, get the latest news, and submit tips to the blog.",
     features: [
       "Search for articles on specific topics",
       "Get the latest articles from the blog",
-      "Submit tips to the blog"
+      "Submit tips to the blog",
     ],
     multilingual: "You can ask questions in any language, and I'll respond in the same language.",
     sampleQueries: [
@@ -19,8 +20,8 @@ export default async function welcomeMessage() {
           "Search for articles about iPhone",
           "Find news about Samsung Galaxy",
           "I want to submit a tip about a new tech product",
-          "What are the most recent articles about AI?"
-        ]
+          "What are the most recent articles about AI?",
+        ],
       },
       {
         language: "German",
@@ -29,8 +30,8 @@ export default async function welcomeMessage() {
           "Suche nach Artikeln über iPhone",
           "Finde Neuigkeiten über Samsung Galaxy",
           "Ich möchte einen Tipp zu einem neuen Tech-Produkt einreichen",
-          "Was sind die neuesten Artikel über KI?"
-        ]
+          "Was sind die neuesten Artikel über KI?",
+        ],
       },
       {
         language: "Spanish",
@@ -39,9 +40,9 @@ export default async function welcomeMessage() {
           "Buscar artículos sobre iPhone",
           "Encontrar noticias sobre Samsung Galaxy",
           "Quiero enviar un consejo sobre un nuevo producto tecnológico",
-          "¿Cuáles son los artículos más recientes sobre IA?"
-        ]
-      }
-    ]
+          "¿Cuáles son los artículos más recientes sobre IA?",
+        ],
+      },
+    ],
   };
-} 
+}

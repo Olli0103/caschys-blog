@@ -1,6 +1,6 @@
 // src/latest-articles.tsx
 
-import { List, ActionPanel, Action, Icon, useNavigation, getPreferenceValues } from "@raycast/api";
+import { List, ActionPanel, Action, Icon, getPreferenceValues } from "@raycast/api";
 import { useState, useEffect } from "react";
 import React from "react";
 import { Article, fetchArticles } from "./utils";
@@ -12,8 +12,7 @@ export default function LatestArticles() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
-  const { push } = useNavigation();
-  
+
   // Load preferences but don't use them directly in this component
   // They are used in the fetchArticles function
   getPreferenceValues();
@@ -35,17 +34,15 @@ export default function LatestArticles() {
   }, []);
 
   // Filter articles based on search
-  const filteredArticles = articles.filter(article => {
+  const filteredArticles = articles.filter((article) => {
     if (!searchText) return true;
-    
+
     const searchLower = searchText.toLowerCase();
     return (
       article.title.toLowerCase().includes(searchLower) ||
       article.description.toLowerCase().includes(searchLower) ||
       (article.creator && article.creator.toLowerCase().includes(searchLower)) ||
-      (article.categories && article.categories.some(category => 
-        category.toLowerCase().includes(searchLower)
-      ))
+      (article.categories && article.categories.some((category) => category.toLowerCase().includes(searchLower)))
     );
   });
 
@@ -71,21 +68,14 @@ export default function LatestArticles() {
         </List.Dropdown>
       }
     >
-      <List.Section 
-        title="Latest Articles" 
-        subtitle={`${filteredArticles.length} of ${articles.length} articles`}
-      >
+      <List.Section title="Latest Articles" subtitle={`${filteredArticles.length} of ${articles.length} articles`}>
         {sortedArticles.map((article) => (
           <ArticleListItem
             key={article.guid || article.link}
             article={article}
             actions={
               <ActionPanel>
-                <Action.Push
-                  title="Show Article"
-                  icon={Icon.Eye}
-                  target={<ArticleDetail article={article} />}
-                />
+                <Action.Push title="Show Article" icon={Icon.Eye} target={<ArticleDetail article={article} />} />
                 <Action.OpenInBrowser
                   title="Open in Browser"
                   url={article.link}

@@ -42,15 +42,6 @@ Example queries:
 - "Zeige mir die neuesten Artikel" (German)
 - "Buscar artículos sobre Android" (Spanish)
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development
-npm run dev
-```
 
 ## License
 

@@ -1,15 +1,7 @@
 // src/submit-tip.tsx
 import React from "react";
 
-import {
-  Form,
-  ActionPanel,
-  Action,
-  showToast,
-  Toast,
-  useNavigation,
-  open,
-} from "@raycast/api";
+import { Form, ActionPanel, Action, showToast, Toast, useNavigation, open } from "@raycast/api";
 import { useState } from "react";
 
 const PRIVACY_POLICY_URL = "https://stadt-bremerhaven.de/datenschutzerklaerung/";
@@ -25,7 +17,7 @@ export default function SubmitTip() {
     if (!consent) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "Please accept the privacy policy"
+        title: "Please accept the privacy policy",
       });
       return;
     }
@@ -33,7 +25,7 @@ export default function SubmitTip() {
     if (!tipTitle.trim()) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "Please enter a title for your tip"
+        title: "Please enter a title for your tip",
       });
       return;
     }
@@ -41,7 +33,7 @@ export default function SubmitTip() {
     if (!tipContent.trim()) {
       await showToast({
         style: Toast.Style.Failure,
-        title: "Please describe your tip"
+        title: "Please describe your tip",
       });
       return;
     }
@@ -50,13 +42,15 @@ export default function SubmitTip() {
       // Create email content
       const subject = `Tip for Caschys Blog: ${tipTitle}`;
       const body = `Title: ${tipTitle}\n\nDescription: ${tipContent}\n\nSubmitted by: ${name || "Anonymous"}`;
-      
+
       // Open default email client
-      await open(`mailto:tipp@stadt-bremerhaven.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
-      
+      await open(
+        `mailto:tipp@stadt-bremerhaven.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+      );
+
       await showToast({
         style: Toast.Style.Success,
-        title: "Email client opened"
+        title: "Email client opened",
       });
       pop();
     } catch (error) {
@@ -64,7 +58,7 @@ export default function SubmitTip() {
       await showToast({
         style: Toast.Style.Failure,
         title: "Error opening email client",
-        message: error instanceof Error ? error.message : "Unknown error"
+        message: error instanceof Error ? error.message : "Unknown error",
       });
     }
   };
@@ -104,16 +98,8 @@ export default function SubmitTip() {
         onChange={setName}
       />
       <Form.Separator />
-      <Form.Description
-        title="Privacy"
-        text="Please read our privacy policy (⌘D)"
-      />
-      <Form.Checkbox
-        id="consent"
-        label="I agree to the privacy policy"
-        value={consent}
-        onChange={setConsent}
-      />
+      <Form.Description title="Privacy" text="Please read our privacy policy (⌘D)" />
+      <Form.Checkbox id="consent" label="I agree to the privacy policy" value={consent} onChange={setConsent} />
     </Form>
   );
 }
