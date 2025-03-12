@@ -84,9 +84,9 @@ export function fetchData(urlOrParams: string): Promise<string> {
             const redirectUrl = new URL(res.headers.location, url).toString();
             console.log(`Following redirect to: ${redirectUrl}`);
             // Add redirect count to prevent infinite loops
-            const redirectCount = Number(req.getHeader('x-redirect-count') || 0);
+            const redirectCount = Number(req.getHeader("x-redirect-count") || 0);
             if (redirectCount >= 5) {
-              reject(new Error('Too many redirects'));
+              reject(new Error("Too many redirects"));
               return;
             }
             return fetchData(redirectUrl).then(resolve).catch(reject);
