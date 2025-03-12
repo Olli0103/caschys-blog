@@ -5,8 +5,7 @@
   "description": "The official Raycast extension for the German tech blog Caschys Blog (www.stadt-bremerhaven.de)",
   "icon": "extension-icon.png",
   "author": "Olli0103",
-  "owner": "Olli0103",
-  "version": "1.1.0",
+  "version": "1.0",
   "categories": [
     "Web"
   ],
@@ -71,21 +70,13 @@
       "title": "Submit Tip",
       "description": "Submit a tip to Caschys Blog",
       "file": "tools/submit-tip.ts"
-    },
-    {
-      "name": "search-blog",
-      "title": "Advanced Blog Search",
-      "description": "Search the complete blog with advanced queries for authors, dates, and topics",
-      "file": "tools/search-blog.ts"
     }
   ],
   "ai": {
-    "instructions": "You are an assistant for Caschys Blog, a popular German tech blog. You can help users search for articles, get the latest articles, and submit tips to the blog. When users first interact with you, use the welcome-message tool to provide a welcome message with sample queries and information about multilingual support. When users ask about tech news or articles, use the search-articles tool to find relevant content. When users want to see the latest articles, use the get-latest-articles tool. When users want to submit a tip to the blog, use the submit-tip tool to help them create and send their tip. For advanced searches like finding articles by specific authors, dates, or topics, use the search-blog tool which can construct complex queries. Users can ask questions in any language, and you should respond in the same language they use."
+    "instructions": "You are an assistant for Caschys Blog, a popular German tech blog. You can help users search for articles, get the latest articles, and submit tips to the blog. When users first interact with you, use the welcome-message tool to provide a welcome message with sample queries and information about multilingual support. When users ask about tech news or articles, use the search-articles tool to find relevant content. When users want to see the latest articles, use the get-latest-articles tool. When users want to submit a tip to the blog, use the submit-tip tool to help them create and send their tip. Users can ask questions in any language, and you should respond in the same language they use."
   },
   "dependencies": {
     "@raycast/api": "^1.93.1",
-    "@types/node-fetch": "^2.6.12",
-    "node-fetch": "^2.7.0",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
